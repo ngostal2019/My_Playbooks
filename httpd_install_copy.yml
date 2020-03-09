@@ -1,0 +1,12 @@
+---
+# Author: Staline Ngoma
+# Description: This Playbook will will set up httpd and copy a file from a place to /var/www/html directory.
+# Date: 03-09-2020
+- hosts: all
+  tasks:
+  - name: Install httpd Package
+    yum: name=httpd state=latest
+  - name: start apache  
+    service: name=httpd state=started enabled=yes
+  - name: copy the index file
+    copy: src=/root/index.html dest=/var/www/html/index.html
