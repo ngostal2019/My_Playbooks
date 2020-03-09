@@ -1,0 +1,22 @@
+---
+#Author: Staline Ngoma
+##Description: This Playbook will spin up an ec2 instance onto aws after a proper config.
+##Date: 03-09-2020
+- name: Launching an instance throught Ansible
+  hosts: localhost
+  connection: local
+  tasks:
+  - name: Launch An ec2 AMI
+    ec2:
+         instance_type: t2.micro
+         key_name: put-your-key-here
+         image: put-your-image-id-here
+         region: us-east-2
+         group: default
+         count: 1
+         vpc_subnet_id: put-your-vpc-subnet-id-here
+         wait: yes
+         assign_public_ip: yes
+         count_tag:
+          Name: Anyname
+                                                                                                     
