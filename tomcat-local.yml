@@ -1,0 +1,40 @@
+---
+- name: Playbook to install and start tomcat server.
+  hosts: CentOS7
+  become: True
+  tasks:
+  - name: Fetching Java version.
+    command: java -version
+    register: java_result
+    ignore_errors: True
+
+  - debug:
+     msg: "Failed - Java is not installed"
+    when: java_result is failed
+  - debug:
+     msg: "Success - Java is installed"
+    when: java_result is success
+  
+  - name: Installing Java on the target server
+    yum:
+     name: java
+     state: latest
+  
+  - name: Downloading tomcat
+    get_url:
+      url: https://mirrors.koehn.com/apache/tomcat/tomcat-9/v9.0.37/bin/apache-tomcat-9.0.37.tar.gz
+      dest: /usr/local/
+  
+  - name: unarchiving tomcat
+    unarchive:
+     src: /usr/local/apache-tomcat-9.0.37.tar.gz
+     dest: /usr/local/
+     remote_src: yes
+  
+  - name: Removing downloaded tomcat file
+    file:
+      path: /usr/local/apache-tomcat-9.0.37.tar.gz
+      state: absent
+  
+  - name: Starting tomcat service
+    shell: nohup /usr/local/apache-tomcat-9.0.37/bin/startup.sh 
