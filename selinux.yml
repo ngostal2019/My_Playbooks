@@ -1,0 +1,20 @@
+---
+# Author: Staline Ngoma
+# Date: 08/18/2020
+# Description: This playbook set SELinux in different state on CentOS7/RHEL7
+#              So, just remove the hash sign per your need
+
+- name: This playbook configure SELinux on CentOS/RHEL7.
+  hosts: localhost
+  gather_facts: False
+  tasks:
+  
+  - name: Setting SELinux into permissive mode
+    selinux:
+      policy: targeted
+      state: permissive
+#  - name: Setting SELinux into Enforcing mode
+#      policy: targeted
+#      state: enforcing
+# - name: Disabling SELinux
+#      state: disabled
