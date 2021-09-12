@@ -1,0 +1,42 @@
+---
+- name: This playbook install nginx on all available server
+  hosts: rocky
+  become: yes
+  tasks:
+
+  - name: Make sure nginx is installed on Rocky Linux 8 server 
+    yum:  name=nginx state=latest update_cache=true
+
+  - name: Insuring firewalld allows port 80 on tcp protocol
+    firewalld:
+       port: 80/tcp
+       permanent: yes
+       state: enabled
+
+    notify: 
+        - Start nginx
+
+  handlers: 
+  - name: Start nginx
+    service: name=nginx state=started
+          
+- hosts: ubuntu
+  become: True
+  tasks:
+
+  - name: Make sure nginx is installed on Ubuntu server 
+    apt:  name=nginx state=latest update_cache=true
+    
+  - name: Insuring firewalld allows port 80 on tcp protocol
+    firewalld:
+      port: 80/tcp
+      permanent: yes
+      state: enabled
+  
+    notify: 
+      - Start nginx
+
+  handlers: 
+  - name: Start nginx
+    service: name=nginx state=started
+...
