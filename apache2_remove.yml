@@ -2,11 +2,46 @@
 
 - hosts: all
   become: true
-  gather_facts: False
+  gather_facts: True
+  vars:
+    U_packages:
+          - apache2
+          - libapache2-mod-php
+    R_packages:
+          - httpd
+          - php
   tasks:
 
-  - name: Unistalling apache2 package on all servers
-    apt: name=apache2 state=absent
 
-  - name: Removing php for apache
-    apt: name=libapache2-mod-php state=absent
+  - name: Verifying packages list before removal
+    debug: 
+      msg: "{{ item }}"
+    with_items:
+      - "{{ U_packages }}"
+
+  - name: Removinging apache2 and php packages on all servers
+    apt: 
+      name: "{{ U_packages }}"
+      state: absent
+    when: ansible_distribution == "Ubuntu"
+  
+  - name: Verifying packages list before removal
+    debug: 
+      msg: "{{ item }}"
+    with_items:
+      - "{{ R_packages }}"
+
+  - name: Uninstalling httpd and php packages on all servers
+    dnf: 
+      name: "{{ R_packages }}"
+      state: absent
+    when: ansible_os_family == "RedHat"
+
+  - name: Closing service port for httpd
+    firewalld: port=80/tcp permanent=yes state=disabled
+    when: ansible_os_family == "RedHat"
+
+  - name:
+    file:
+         path: /var/www/html/
+         state: absent

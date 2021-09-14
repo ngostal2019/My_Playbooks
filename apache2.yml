@@ -40,4 +40,27 @@
     dnf: 
       name: "{{ R_packages }}"
       state: latest
-    when: ansible_os_family == "Rocky"
+    when: ansible_os_family == "RedHat"
+
+  - name: Copying index file from controller to servers
+    copy:
+         src: index.html
+         dest: /var/www/html/index.html 
+    notify: Restart apache2 and httpd
+
+  - name: Starting service for httpd
+    service: name=httpd state=started
+    when: ansible_os_family == "RedHat"
+
+  - name: Opening service port for httpd
+    firewalld: port=80/tcp permanent=yes state=enabled
+    when: ansible_os_family == "RedHat"
+
+  handlers:
+  - name: Restart apache2 and httpd
+    service: 
+          name: "{{ item  }}" 
+          state: restarted
+    with_items:
+        - apache2 
+        - httpd
