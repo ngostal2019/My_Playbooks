@@ -1,0 +1,12 @@
+---
+
+- hosts: all
+  become: true
+  gather_facts: False
+  tasks:
+
+  - name: Unistalling apache2 package on all servers
+    apt: name=apache2 state=absent
+
+  - name: Removing php for apache
+    apt: name=libapache2-mod-php state=absent

@@ -1,0 +1,15 @@
+---
+
+- hosts: all
+  become: true
+  gather_facts: False
+  tasks:
+
+  - name: Updating the repository Index prior to install packages...
+    apt: update_cache=true 
+
+  - name: Installing apache2 package on all servers
+    apt: name=apache2 state=latest
+
+  - name: Adding php for apache
+    apt: name=libapache2-mod-php state=latest
