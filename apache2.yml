@@ -2,14 +2,42 @@
 
 - hosts: all
   become: true
-  gather_facts: False
+  gather_facts: True
+  vars:
+    U_packages:
+          - apache2
+          - libapache2-mod-php
+    R_packages:
+          - httpd
+          - php
   tasks:
 
+
   - name: Updating the repository Index prior to install packages...
-    apt: update_cache=true 
+    package: 
+      update_cache: true 
+    when: ansible_distribution in ["Ubuntu","Rocky"]
 
-  - name: Installing apache2 package on all servers
-    apt: name=apache2 state=latest
+  - name: Verifying packages list before installation
+    debug: 
+      msg: "{{ item }}"
+    with_items:
+      - "{{ U_packages }}"
 
-  - name: Adding php for apache
-    apt: name=libapache2-mod-php state=latest
+  - name: Installing apache2 and php packages on all servers
+    apt: 
+      name: "{{ U_packages }}"
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+  
+  - name: Verifying packages list before installation
+    debug: 
+      msg: "{{ item }}"
+    with_items:
+      - "{{ R_packages }}"
+
+  - name: Installing httpd and php packages on all servers
+    dnf: 
+      name: "{{ R_packages }}"
+      state: latest
+    when: ansible_os_family == "Rocky"
